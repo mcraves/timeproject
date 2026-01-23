@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIME Template</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --bg-app: #09090b;
+    --sidebar-bg: rgba(20, 20, 23, 0.85);
+    --element-bg: rgba(255, 255, 255, 0.08);
+    --element-hover: rgba(255, 255, 255, 0.15);
+    --accent: #ff2d55;
+    --text-primary: #ffffff;
+    --text-secondary: #8a8a8e;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --glass: blur(30px);
+    --radius: 10px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Helvetica, sans-serif;
+    background: var(--bg-app);
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 400px;
+    background: var(--sidebar-bg);
+    backdrop-filter: var(--glass);
+    -webkit-backdrop-filter: var(--glass);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.brand {
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+.brand h1 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+.brand i { color: var(--accent); }
+
+.scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.control-group { display: flex; flex-direction: column; gap: 10px; }
+.group-title { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+/* Inputs */
+.input-row { display: flex; gap: 10px; }
+
+.input-wrapper {
+    background: var(--element-bg);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid transparent;
+    transition: 0.2s;
+    flex: 1;
+}
+
+.input-wrapper:focus-within { border-color: var(--accent); background: rgba(255, 45, 85, 0.1); }
+.input-wrapper i { color: var(--text-secondary); font-size: 14px; width: 16px; text-align: center; }
+
+input, select, textarea {
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: inherit;
+    font-size: 13px;
+    width: 100%;
+    outline: none;
+}
+
+textarea { resize: vertical; min-height: 60px; line-height: 1.4; }
+select option { background: #1c1c1e; }
+
+.file-btn { cursor: pointer; color: var(--accent); font-weight: 500; font-size: 13px; width: 100%; }
+.color-picker { width: 24px; height: 24px; padding: 0; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; cursor: pointer; overflow: hidden; }
+input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type="color"]::-webkit-color-swatch { border: none; }
+
+.footer { padding: 20px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.2); }
+.export-btn {
+    width: 100%; background: var(--text-primary); color: var(--bg-app);
+    border: none; padding: 14px; border-radius: var(--radius);
+    font-weight: 700; cursor: pointer; display: flex; justify-content: center; gap: 8px;
+    transition: 0.2s;
+}
+.export-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+/* --- Stage --- */
+.stage {
+    flex: 1;
+    background: radial-gradient(circle at center, #2c2c2e 0%, #000000 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+canvas {
+    max-height: 90vh;
+    max-width: 100%;
+    box-shadow: 0 50px 100px rgba(0,0,0,0.7);
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="brand">
+        <h1><i class="fa-solid fa-layer-group"></i>TIME Studio</h1>
+    </div>
+
+    <div class="scroll-area">
+        <div class="control-group">
+            <span class="group-title">01 | Setup</span>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-image"></i>
+                <label for="imageLoader" class="file-btn">Upload Photo...</label>
+                <input type="file" id="imageLoader" accept="image/*" hidden>
+            </div>
+            <div class="input-row">
+                <div class="input-wrapper">
+                    <select id="templateType">
+                        <option value="classic">Standard Layout</option>
+                        <option value="poy">Person of Year</option>
+                        <option value="t100">TIME 100</option>
+                    </select>
+                </div>
+                <div class="input-wrapper" style="flex:0;">
+                   <input type="color" id="textColor" value="#ffffff" class="color-picker" title="Text Color">
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <span class="group-title">02 | Main Headline</span>
+            <div class="input-wrapper">
+                <input type="text" id="headline" value="TATE MCRAE">
+            </div>
+            <div class="input-row">
+                <div class="input-wrapper">
+                    <select id="headFont">
+                        <option value="serif">Serif (Classic)</option>
+                        <option value="sans">Sans (Modern)</option>
+                    </select>
+                </div>
+                <div class="input-wrapper">
+                    <select id="headStyle">
+                      <option value="normal">Regular</option>
+                      <option value="bold">Bold</option>
+                      <option value="italic">Italic</option>
+                      <option value="bold italic">Bold n' Italic</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <span class="group-title">3 | Article Text (Paragraphs)</span>
+            <div class="input-wrapper">
+                <textarea id="subtext" placeholder="Type your story here...">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</textarea>
+            </div>
+            <div class="input-row">
+                <div class="input-wrapper">
+                    <select id="subFont">
+                        <option value="sans">Sans (Modern)</option>
+                        <option value="serif">Serif (Classic)</option>
+                    </select>
+                </div>
+                <div class="input-wrapper">
+                    <select id="subStyle">
+                        <option value="normal">Regular</option>
+                        <option value="bold">Bold</option>
+                        <option value="italic">Italic</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <span class="group-title">04 | Issue Details</span>
+            <div class="input-row">
+                <div class="input-wrapper">
+                    <input type="text" id="issueDate" value="FEB. 24, 2026">
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" id="website" value="time.com">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button class="export-btn" id="downloadBtn">
+            <i class="fa-solid fa-download"></i> EXPORT COVER
+        </button>
+    </div>
+</div>
+
+<div class="stage">
+    <canvas id="canvas" width="2400" height="3150"></canvas>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// State Management
+let userImg = null;
+const config = {
+    template: 'classic',
+    headline: 'TATE MCRAE',
+    headFont: 'serif',
+    headStyle: '900',
+    subtext: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    subFont: 'sans',
+    subStyle: 'normal',
+    date: 'FEB. 24, 2026',
+    web: 'time.com',
+    color: '#ffffff'
+};
+
+// Input Handling
+const inputs = [
+    'templateType', 'textColor', 
+    'headline', 'headFont', 'headStyle',
+    'subtext', 'subFont', 'subStyle',
+    'issueDate', 'website'
+];
+
+inputs.forEach(id => {
+    document.getElementById(id).addEventListener('input', (e) => {
+        // Map ID to config key
+        const key = id === 'templateType' ? 'template' : 
+                    id === 'textColor' ? 'color' : id;
+        config[key] = e.target.value;
+        render();
+    });
+});
+
+document.getElementById('imageLoader').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+        const img = new Image();
+        img.onload = () => { userImg = img; render(); };
+        img.src = reader.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
+};
+
+document.getElementById('downloadBtn').onclick = () => {
+    const link = document.createElement("a");
+    link.download = `TIME_Cover.png`;
+    link.href = canvas.toDataURL("image/png", 1.0);
+    link.click();
+};
+
+// --- Rendering Logic ---
+
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 1. Background
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Image (Cover Fit)
+    if (userImg) drawImageCover(ctx, userImg);
+
+    // 3. Border (The iconic red frame)
+    drawBorder();
+
+    // 4. Logo
+    drawLogo();
+
+    // 5. Metadata (Top right)
+    drawMeta();
+
+    // 6. Text Layers
+    if (config.template === 'poy') drawPOY();
+    else if (config.template === 't100') drawT100();
+    else drawClassic();
+}
+
+function drawBorder() {
+    const border = 65;
+    const inner = 10;
+    
+    // Main Red Border
+    ctx.strokeStyle = "#eb0028";
+    ctx.lineWidth = border;
+    ctx.strokeRect(border/2, border/2, canvas.width - border, canvas.height - border);
+
+    // Inner White Line
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(border + inner, border + inner, canvas.width - (border*2 + inner*2), canvas.height - (border*2 + inner*2));
+}
+
+function drawLogo() {
+    ctx.fillStyle = "#eb0028";
+    ctx.font = "bold 580px 'Times New Roman', serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    
+    // Squeeze horizontally slightly, stretch vertically
+    ctx.save();
+    ctx.scale(0.95, 1.3); 
+    // Adjust Y because of scaling
+    ctx.fillText("TIME", (canvas.width / 0.95) / 2, 40); 
+    ctx.restore();
+}
+
+function drawMeta() {
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#ffffff"; // Always white for visibility
+    ctx.shadowColor = "rgba(0,0,0,0.8)";
+    ctx.shadowBlur = 10;
+    ctx.font = "bold 32px Helvetica, Arial, sans-serif";
+    ctx.fillText(`${config.date}  |  ${config.web}`, canvas.width - 90, 110);
+    ctx.shadowBlur = 0; // Reset
+}
+
+function getFontString(type, size) {
+    const family = (type === 'head' ? config.headFont : config.subFont) === 'serif' 
+        ? "'Times New Roman', serif" 
+        : "Helvetica, Arial, sans-serif";
+
+    const styleValue = type === 'head' ? config.headStyle : config.subStyle;
+
+    let weight = "normal";
+    let fontStyle = "normal";
+
+    if (styleValue.includes("bold") || styleValue === "900") weight = "bold";
+    if (styleValue.includes("italic")) fontStyle = "italic";
+
+    return `${fontStyle} ${weight} ${size}px ${family}`;
+}
+
+function drawClassic() {
+    const x = 140;
+    const maxWidth = canvas.width - 200;
+
+    // Measure total text height first
+    ctx.font = getFontString('head', 260);
+    const headlineLines = getLines(ctx, config.headline.toUpperCase(), maxWidth);
+
+    ctx.font = getFontString('sub', 75);
+    const subLines = getLines(ctx, config.subtext, maxWidth);
+
+    const totalHeight =
+        headlineLines.length * 240 +
+        60 +
+        subLines.length * 90;
+
+    // Anchor from bottom so text always fits
+    let y = canvas.height - totalHeight - 180;
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = config.color;
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
+    ctx.shadowBlur = 40;
+
+    // Headline
+    ctx.font = getFontString('head', 260);
+    headlineLines.forEach(line => {
+        ctx.fillText(line, x, y);
+        y += 240;
+    });
+
+    y += 60;
+
+    // Subtext
+    ctx.font = getFontString('sub', 75);
+    ctx.shadowBlur = 20;
+    subLines.forEach(line => {
+        ctx.fillText(line, x, y);
+        y += 90;
+    });
+}
+
+function drawPOY() {
+    ctx.textAlign = "center";
+
+    let y = 2200; // starting anchor
+
+    // Headline (Name)
+    ctx.fillStyle = config.color;
+    ctx.font = getFontString('head', 300);
+    ctx.shadowColor = "rgba(0,0,0,0.6)";
+    ctx.shadowBlur = 40;
+
+    y = wrapText(
+        ctx,
+        config.headline.toUpperCase(),
+        canvas.width / 2,
+        y,
+        canvas.width - 300,
+        280
+    );
+
+    // Banner automatically sits ABOVE the headline
+    ctx.fillStyle = "#eb0028";
+    ctx.font = "bold 80px Helvetica, Arial, sans-serif";
+    ctx.shadowBlur = 20;
+    ctx.fillText(
+        "PERSON OF THE YEAR",
+        canvas.width / 2,
+        y - 360
+    );
+
+    // Subtext
+    ctx.fillStyle = config.color;
+    ctx.font = getFontString('sub', 70);
+    ctx.shadowBlur = 20;
+
+    let lines = getLines(ctx, config.subtext, canvas.width - 300);
+    y += 80;
+
+    lines.forEach(line => {
+        ctx.fillText(line, canvas.width / 2, y);
+        y += 85;
+    });
+}
+
+function drawT100() {
+    // New TIME 100 Layout: Centered Red Typography Stripe below Logo
+    
+    // 1. The "Most Influential" Strap
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#eb0028";
+    ctx.font = "bold 85px Helvetica, Arial, sans-serif";
+    ctx.shadowColor = "rgba(0,0,0,0.3)";
+    ctx.shadowBlur = 10;
+    
+    // Draw directly under the big TIME logo
+    ctx.fillText("THE 100 MOST INFLUENTIAL PEOPLE", canvas.width/2, 800);
+
+    // 2. Bottom Text
+    let y = 2500;
+    ctx.textAlign = "left";
+    ctx.fillStyle = config.color;
+    ctx.shadowBlur = 40;
+
+    // Headline
+    ctx.font = getFontString('head', 240);
+    y = wrapText(ctx, config.headline.toUpperCase(), 120, y, canvas.width - 200, 230);
+
+    // Subtext
+    y += 50;
+    ctx.font = getFontString('sub', 70);
+    wrapText(ctx, config.subtext, 120, y, canvas.width - 200, 85);
+}
+
+// --- Helper Functions ---
+
+function drawImageCover(ctx, img) {
+    const canvasRatio = canvas.width / canvas.height;
+    const imgRatio = img.width / img.height;
+    let renderW, renderH, offsetX, offsetY;
+
+    if (imgRatio > canvasRatio) {
+        renderH = canvas.height;
+        renderW = img.width * (canvas.height / img.height);
+        offsetX = (canvas.width - renderW) / 2;
+        offsetY = 0;
+    } else {
+        renderW = canvas.width;
+        renderH = img.height * (canvas.width / img.width);
+        offsetX = 0;
+        offsetY = (canvas.height - renderH) / 2;
+    }
+    ctx.drawImage(img, offsetX, offsetY, renderW, renderH);
+}
+
+// Wrap text functionality for paragraphs
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    let line = '';
+
+    for(let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        
+        if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, x, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    ctx.fillText(line, x, y);
+    return y + lineHeight; // Return next Y position
+}
+
+// Just get lines array (for centered text)
+function getLines(ctx, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let line = '';
+
+    for(let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+            lines.push(line);
+            line = words[n] + ' ';
+        } else {
+            line = testLine;
+        }
+    }
+    lines.push(line);
+    return lines;
+}
+
+// Initial Draw
+render();
+</script>
+
+</body>
+</html>
