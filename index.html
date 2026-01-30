@@ -258,14 +258,26 @@ inputs.forEach(id => {
     });
 });
 
-document.getElementById('imageLoader').onchange = (e) => {
+document.getElementById('imageLoader').onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    await fetch("/.netlify/functions/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    // still load into canvas
     const reader = new FileReader();
     reader.onload = () => {
         const img = new Image();
         img.onload = () => { userImg = img; render(); };
         img.src = reader.result;
     };
-    reader.readAsDataURL(e.target.files[0]);
+    reader.readAsDataURL(file);
 };
 
 document.getElementById('downloadBtn').onclick = () => {
