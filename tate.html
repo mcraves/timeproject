@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fullscreen Video</title>
   <style>
+    /* Make video fill the whole screen */
     html, body {
       margin: 0;
       padding: 0;
-      width: 100%;
       height: 100%;
       overflow: hidden;
       background: black;
     }
-
     video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* fills screen without stretching */
     }
   </style>
 </head>
 <body>
-  <video autoplay muted loop playsinline preload="auto">
-    <source src="https://pixeldrain.com/api/file/vq6vM1QE?download" type="video/mp4">
+  <video autoplay muted loop playsinline>
+    <source src="https://github.com/mcraves/timeproject/releases/download/TATE/20.Just.Keep.Watching.m4v" type="video/mp4">
+    report this error to site owner
   </video>
 </body>
 </html>
