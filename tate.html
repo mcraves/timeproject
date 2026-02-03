@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fullscreen Video</title>
+  <title>Fullscreen Video with Sound</title>
   <style>
-    /* Make video fill the whole screen */
     html, body {
       margin: 0;
       padding: 0;
@@ -19,14 +18,41 @@
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover; /* fills screen without stretching */
+      object-fit: cover;
+    }
+    /* Optional overlay to click once to start video with sound */
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: transparent;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <video autoplay muted loop playsinline>
-    <source src="https://github.com/mcraves/timeproject/releases/download/TATE/20.Just.Keep.Watching.m4v" type="video/mp4">
-    report this error to site owner
-  </video>
+
+<div id="overlay"></div>
+
+<video id="video" loop>
+  <source src="https://github.com/mcraves/timeproject/releases/download/TATE/20.Just.Keep.Watching.m4v" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<script>
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+
+  // Wait for user click to allow autoplay with sound
+  overlay.addEventListener('click', () => {
+    video.play();
+    overlay.style.display = 'none'; // remove overlay after click
+  });
+</script>
+
 </body>
 </html>
