@@ -1,58 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fullscreen Video with Sound</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      background: black;
-    }
-    video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    /* Optional overlay to click once to start video with sound */
-    #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: transparent;
-      cursor: pointer;
-      z-index: 10;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied</title>
+    <style>
+        /* Reset and Body Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #0d0b0e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+
+        /* The Text Container */
+        .enter-text {
+            font-size: 2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #6a1310;
+            text-shadow: 0 0 8px #6a1310, 0 0 15px rgba(106, 19, 16, 0.4);
+            animation: flash-intro 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            z-index: 2;
+        }
+
+        .arrow {
+            display: inline-block;
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .enter-text:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        @keyframes flash-intro {
+            0% {
+                opacity: 0;
+                color: #ffffff;
+                text-shadow: 0 0 20px #ffffff, 0 0 40px #ffffff;
+                transform: scale(0.95);
+            }
+            10% {
+                opacity: 1;
+                color: #ffffff;
+                text-shadow: 0 0 30px #ffffff, 0 0 60px #ffffff;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                color: #6a1310;
+                text-shadow: 0 0 10px #6a1310, 0 0 20px rgba(106, 19, 16, 0.5);
+                transform: scale(1);
+            }
+        }
+
+        /* Video overlay */
+        .video-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 5;
+        }
+
+        .video-overlay video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 18px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #6a1310;
+            text-shadow: 0 0 6px #6a1310;
+            z-index: 2;
+        }
+
+        .footer a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-<div id="overlay"></div>
+    <div class="enter-text" id="enter">
+        Enter <span class="arrow">&rarr;</span>
+    </div>
 
-<video id="video" loop>
-  <source src="https://github.com/mcraves/timeproject/releases/download/TATE/20.Just.Keep.Watching.m4v" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+    <div class="footer">
+        <a href="./time.html">TIME MAGAZINE &rarr;</a>
+    </div>
 
-<script>
-  const video = document.getElementById('video');
-  const overlay = document.getElementById('overlay');
+    <script>
+        const enter = document.getElementById('enter');
 
-  // Wait for user click to allow autoplay with sound
-  overlay.addEventListener('click', () => {
-    video.play();
-    overlay.style.display = 'none'; // remove overlay after click
-  });
-</script>
+        enter.addEventListener('click', () => {
+            const overlay = document.createElement('div');
+            overlay.className = 'video-overlay';
+
+            const video = document.createElement('video');
+            video.src = 'https://github.com/mcraves/timeproject/releases/download/TATE/20.Just.Keep.Watching.m4v';
+            video.autoplay = true;
+            video.controls = false;
+            video.playsInline = true;
+
+            overlay.appendChild(video);
+            document.body.appendChild(overlay);
+        });
+    </script>
 
 </body>
 </html>
