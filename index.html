@@ -108,23 +108,27 @@
         <a href="./time.html">TIME MAGAZINE &rarr;</a>
     </div>
 
-    <script>
-        const enter = document.getElementById('enter');
+  <script>
+    const enter = document.getElementById('enter');
 
-        enter.addEventListener('click', () => {
-            const overlay = document.createElement('div');
-            overlay.className = 'video-overlay';
+    enter.addEventListener('click', () => {
+        const overlay = document.createElement('div');
+        overlay.className = 'video-overlay';
 
-            const video = document.createElement('video');
-            video.src = 'https://mcraves.github.io/timeproject/8f4f23580d93b4f7848c8ee0b73b2c.mp4';
-            video.autoplay = true;
-            video.controls = false;
-            video.playsInline = true;
+        const video = document.createElement('video');
+        video.src = 'https://mcraves.github.io/timeproject/8f4f23580d93b4f7848c8ee0b73b2c.mp4';
+        video.autoplay = true;
+        video.controls = false;
+        video.playsInline = true;
 
-            overlay.appendChild(video);
-            document.body.appendChild(overlay);
+        // 🔁 Redirect after video finishes
+        video.addEventListener('ended', () => {
+            window.location.href = 'https://f1thealbum.lnk.to/justkeepwatching';
         });
-    </script>
 
+        overlay.appendChild(video);
+        document.body.appendChild(overlay);
+    });
+</script>
 </body>
 </html>
